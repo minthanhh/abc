@@ -1,0 +1,20 @@
+tasks:
+  - name: Node
+    before: |
+      VERSION=$(cat .nvmrc)
+      nvm install $VERSION
+      nvm alias default $VERSION
+      nvm use $VERSION
+    init: |
+      npm ci --cache .npm --prefer-offline
+
+vscode:
+  extensions:
+    - dbaeumer.vscode-eslint
+    - editorconfig.editorconfig
+    - esbenp.prettier-vscode
+    - firsttris.vscode-jest-runner
+    - GitLab.gitlab-workflow
+    - mhutchie.git-graph
+    - nrwl.angular-console
+    - vscode-icons-team.vscode-icons
