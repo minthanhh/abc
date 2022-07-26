@@ -48,7 +48,8 @@
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "tasks:build",
-        "hmr": true
+        "hmr": true,
+        "proxyConfig": "apps/tasks/proxy.conf.json"
       },
       "configurations": {
         "development": {
