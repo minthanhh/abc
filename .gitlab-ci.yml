@@ -54,3 +54,22 @@ build:
   extends: .distributed
   script:
     - npx nx affected --base=$NX_BASE --head=$NX_HEAD --target=build --parallel=3
+  artifacts:
+    paths:
+      - dist/
+
+docker:
+  extends: .distributed
+  image: gperdomor/nx-docker:18.6.0-alpine
+  stage: build
+  needs: [build]
+  services:
+    - docker:20.10.17-dind
+  variables:
+    INPUT_PUSH: 'true'
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - npx nx affected --target=docker --all
+  artifacts:
+    paths:
+      - .nx-docker/
