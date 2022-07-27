@@ -24,7 +24,8 @@
             }
           ]
         }
-      }
+      },
+      "dependsOn": ["prisma-generate"]
     },
     "serve": {
       "executor": "@nrwl/node:node",
@@ -35,14 +36,16 @@
         "production": {
           "buildTarget": "api:build:production"
         }
-      }
+      },
+      "dependsOn": ["prisma-generate"]
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/api/**/*.ts"]
-      }
+      },
+      "dependsOn": ["prisma-generate"]
     },
     "test": {
       "executor": "@nrwl/jest:jest",
@@ -50,6 +53,14 @@
       "options": {
         "jestConfig": "apps/api/jest.config.ts",
         "passWithNoTests": true
+      },
+      "dependsOn": ["prisma-generate"]
+    },
+    "prisma-generate": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "command": "npx prisma generate --schema=./apps/api/prisma/schema.prisma"
       }
     }
   },
