@@ -1,9 +1,10 @@
 default:
-  image: node:18.6.0-alpine
+  image: node:18.7.0-alpine
 
 stages:
   - test
   - build
+  - deploy
 
 .distributed:
   interruptible: true
@@ -60,7 +61,7 @@ build:
 
 docker:
   extends: .distributed
-  image: gperdomor/nx-docker:18.6.0-alpine
+  image: gperdomor/nx-docker:18.7.0-alpine
   stage: build
   needs: [build]
   services:
@@ -68,8 +69,16 @@ docker:
   variables:
     INPUT_PUSH: 'true'
   script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
-    - npx nx affected --target=docker --all
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username=$CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - echo "$HEROKU_API_KEY" | docker login --username=_ --password-stdin registry.heroku.com
+    - npx nx affected --base=$NX_BASE --head=$NX_HEAD --target=docker
   artifacts:
     paths:
       - .nx-docker/
+
+deploy:
+  extends: .distributed
+  stage: deploy
+  script:
+    - npx nx affected --base=$NX_BASE --head=$NX_HEAD --target=heroku-deploy
+  when: manual

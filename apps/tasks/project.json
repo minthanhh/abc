@@ -80,7 +80,7 @@
       "executor": "@nx-tools/nx-docker:build",
       "options": {
         "metadata": {
-          "images": ["registry.gitlab.com/gperdomor/nerdearla-workshop/tasks"],
+          "images": ["registry.gitlab.com/gperdomor/nerdearla-workshop/tasks", "registry.heroku.com/nerdearla/web"],
           "tags": [
             "type=schedule",
             "type=ref,event=branch",
@@ -92,6 +92,15 @@
             "type=sha,prefix=sha-"
           ]
         }
+      }
+    },
+    "heroku-deploy": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "commands": [
+          "node ./tools/scripts/heroku-deploy.js -a nerdearla -t $HEROKU_API_KEY -i $(cat .nx-docker/tasks/iidfile)"
+        ]
       }
     }
   },
