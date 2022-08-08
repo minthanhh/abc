@@ -1,11 +1,11 @@
 import { ExclamationCircleIcon } from '@heroicons/react/solid';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { ITask } from '@nerdearla-workshop/api-interfaces';
 import { useContext, useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useSWRConfig } from 'swr';
 import * as yup from 'yup';
 import { FilterContext } from './filter-context';
-import { ITask } from '@nerdearla-workshop/api-interfaces';
 import { classNames } from './utils/class-names';
 
 const schema = yup.object({
@@ -29,9 +29,10 @@ export const TaskForm = ({ task, setTask }: TaskFormProps) => {
     handleSubmit,
     setValue,
     reset,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<FormData>({
     resolver: yupResolver(schema),
+    mode: 'all',
   });
 
   useEffect(() => {
@@ -137,7 +138,8 @@ export const TaskForm = ({ task, setTask }: TaskFormProps) => {
           </button>
           <button
             type="submit"
-            className="bg-nerdearla-600 hover:bg-nerdearla-700 focus:ring-nerdearla-500 ml-3 inline-flex justify-center rounded-md border border-transparent py-2 px-4 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2"
+            disabled={!isValid}
+            className="bg-nerdearla-600 enabled:hover:bg-nerdearla-700 focus:ring-nerdearla-500 ml-3 inline-flex justify-center rounded-md border border-transparent py-2 px-4 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Save
           </button>

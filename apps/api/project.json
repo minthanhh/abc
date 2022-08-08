@@ -10,7 +10,8 @@
         "outputPath": "dist/apps/api",
         "main": "apps/api/src/main.ts",
         "tsConfig": "apps/api/tsconfig.app.json",
-        "assets": ["apps/api/src/assets"]
+        "assets": ["apps/api/src/assets"],
+        "generatePackageJson": true
       },
       "configurations": {
         "production": {
@@ -61,6 +62,34 @@
       "outputs": [],
       "options": {
         "command": "npx prisma generate --schema=./apps/api/prisma/schema.prisma"
+      }
+    },
+    "docker": {
+      "executor": "@nx-tools/nx-docker:build",
+      "options": {
+        "metadata": {
+          "images": ["registry.gitlab.com/gperdomor/nerdearla-workshop/api", "registry.heroku.com/nerdearla-api/web"],
+          "tags": [
+            "type=schedule",
+            "type=ref,event=branch",
+            "type=ref,event=tag",
+            "type=ref,event=pr",
+            "type=semver,pattern={{version}}",
+            "type=semver,pattern={{major}}.{{minor}}",
+            "type=semver,pattern={{major}}",
+            "type=sha,prefix=sha-"
+          ]
+        }
+      }
+    },
+    "heroku-deploy": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "commands": [
+          "npx prisma migrate deploy --schema=./apps/api/prisma/schema.prisma",
+          "node ./tools/scripts/heroku-deploy.js -a nerdearla-api -t $HEROKU_API_KEY -i $(cat .nx-docker/api/iidfile)"
+        ]
       }
     }
   },
